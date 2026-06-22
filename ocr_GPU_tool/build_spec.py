@@ -14,7 +14,10 @@ EXTRAS_OCR = [
     "shapely", "tiktoken", "tokenizers",
 ]
 
-pp_dist = importlib.metadata.distribution("paddlepaddle-gpu")
+try:
+    pp_dist = importlib.metadata.distribution("paddlepaddle-gpu")
+except importlib.metadata.PackageNotFoundError:
+    pp_dist = importlib.metadata.distribution("paddlepaddle")
 PP_SITE = Path(pp_dist.locate_file("."))
 PADDLE_LIBS = PP_SITE / "paddle" / "libs"
 
@@ -31,8 +34,40 @@ for pkg in EXTRAS_OCR:
     except importlib.metadata.PackageNotFoundError:
         pass
 
-cmd = "pyinstaller --onefile --windowed --name OCRToolGPU"
-cmd += " --collect-all PySide6"
+HIDDEN_IMPORTS = [
+    "paddle",
+    "paddlex",
+    "requests",
+    "requests.exceptions",
+    "urllib3",
+    "urllib3.util",
+    "huggingface_hub",
+    "certifi",
+    "charset_normalizer",
+    "idna",
+    "PIL",
+    "PIL._imaging",
+]
+
+try:
+    import certifi
+    CA_BUNDLE = Path(certifi.where())
+    add_data.append(f"{CA_BUNDLE}{os.pathsep}{CA_BUNDLE.parent.name}")
+except Exception:
+    pass
+
+# Bundle local model cache
+MODEL_CACHE = Path.home() / ".paddlex"
+if MODEL_CACHE.is_dir():
+    add_data.append(f"{MODEL_CACHE}{os.pathsep}models")
+
+cmd = "pyinstaller --onefile --windowed --clean --name OCRToolGPU"
+cmd += " --collect-binaries PySide6"
+cmd += " --collect-data PySide6.QtCore"
+cmd += " --collect-all paddlex"
+cmd += " --collect-all paddle"
+for m in HIDDEN_IMPORTS:
+    cmd += f' --hidden-import "{m}"'
 for d in add_data:
     cmd += f' --add-data "{d}"'
 cmd += " main.py"

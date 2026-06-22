@@ -21,8 +21,7 @@ if getattr(sys, "frozen", False):
 
     os.environ.setdefault("PADDLE_PDX_CACHE_HOME", str(_cache_dir))
 else:
-    os.environ.setdefault("PADDLE_PDX_CACHE_HOME", os.path.expanduser("~/.paddlex"))
-    os.environ.setdefault("PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK", "False")
+    os.environ.setdefault("PADDLE_PDX_CACHE_HOME", str(Path.home() / ".paddlex"))
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt
