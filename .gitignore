@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.eggs/
+
+# PyInstaller
+*.spec
+build/
+dist/
+
+# OCR output
+output/
+
+# PaddleX model cache
+models/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+.DS_Store
+# local
+aaa.png
+Snipaste_2026-06-12_09-30-04.png
+test.png
+tool_gpu.py
+tool.py
